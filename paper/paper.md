@@ -43,7 +43,7 @@ Many flavours of MLIPs exist, and with them have arisen a variety of software pa
 
 ![Schematic overview of the functionality of `graph-pes`. The core components are highlighted in colour. Red: The `AtomicGraph` class is used to represent atomic structures and incorporates the notion of locality via a neighbour list. Blue: The `GraphPESModel` class is the general base class for all `graph-pes` models. Green: `graph-pes` includes a CLI for easy training, and interfaces to multiple external simulation tools for evaluating MLIPs.](./overview.png)
 
-`graph-pes` provides a **unified interface and framework** for defining, training, and working with graph-based MLIP models, complementing existing software in the field (see "Related work" section below). This reduces the barrier to entry for researchers wanting to implement new MLIP architectures, and allows practitioners to easily explore different MLIP architectures: training scripts require as little as one line of code to swap between model architectures, while validation scripts can be written in an architecture-agnostic manner, with `LAMMPS` input scripts, `ASE` calculators, and `torch-sim` simulations requiring no changes other than pointing to a different model file.
+The `graph-pes` package provides a **unified interface and framework** for defining, training, and working with graph-based MLIP models, complementing existing software in the field (see "Related work" section below). This reduces the barrier to entry for researchers wanting to implement new MLIP architectures, and allows practitioners to easily explore different MLIP architectures: training scripts require as little as one line of code to swap between model architectures, while validation scripts can be written in an architecture-agnostic manner, with `LAMMPS` input scripts, `ASE` calculators, and `torch-sim` simulations requiring no changes other than pointing to a different model file.
 
 # Related work
 
@@ -72,7 +72,7 @@ Implementations need only define a forward pass that returns a local energy for 
 the framework handles the calculation of forces and stress tensors in a conservative manner via automatic differentiation. 
 We also support models that return direct force and stress tensor predictions (e.g., `TensorNet` or `orb-v3-*` with their optional direct force readout heads).
 
-Building on the `GraphPESModel` class, we provide independent (re-) implementations of popular MLIP architectures, including `PaiNN` [@Schutt-21-06], `EDDP` [@Pickard-22-07], `NequIP` [@Batzner-22-05], `MACE` [@Batatia-22-10], and `TensorNet` [@Simeon-23-06]. 
+Building on the `GraphPESModel` class, we provide independent re-implementations of popular MLIP architectures, including `PaiNN` [@Schutt-21-06], `EDDP` [@Pickard-22-07], `NequIP` [@Batzner-22-05], `MACE` [@Batatia-22-10], and `TensorNet` [@Simeon-23-06]. 
 We use building blocks provided by `e3nn` [@Geiger-22-07] to implement models that act on spherical tensor decompositions.
 
 Furthermore, we provide an `AdditionModel` implementation, which makes predictions as a sum over independent models. 
