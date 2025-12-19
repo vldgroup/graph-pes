@@ -52,7 +52,7 @@ The `graph-pes` package provides a **unified interface and framework** for defin
 A number of existing packages offer training and validation pipelines for particular ML-PES architectures, including `schnetpack` [@schutt2019schnetpack; @schutt2023schnetpack], `deepmd-kit` [@Wang-18-07; @Zeng-23-08], `nequip` [@Batzner-22-05], `mace-torch` [@Batatia-22-10], `torchmd-net` [@TorchMDNet], and `fairchem` [@fairchem]. 
 These frameworks focus on their associated model families and do not share a common interface for training.
 While `MatterTune` [@Kong-25-04] offers a unified interface for foundation model fine-tuning, it does not easily support training arbitrary models from scratch. 
-In contrast to these, `graph-pes` is a general, model-agnostic framework, designed to exact enable side-by-side comparisons, easy implementation of arbitrary new architectures, and standardized training and evaluation workflows.
+In contrast to these, `graph-pes` is a general, model-agnostic framework, designed to enable exact side-by-side comparisons, easy implementation of arbitrary new architectures, and standardized training and evaluation workflows.
 
 # Features and implementation
 
