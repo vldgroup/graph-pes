@@ -410,7 +410,7 @@ class GraphPESModel(GraphPropertyModel):
     ):
         """
         Return a model suitable for use with the
-        `torch_sim <https://github.com/Radical-AI/torch-sim>`__ package.
+        `torch_sim <https://github.com/TorchSim/torch-sim>`__ package.
 
         Internally, we set this model to evaluation mode, and wrap it in a
         class that is suitable for use with the ``torch_sim`` package.
