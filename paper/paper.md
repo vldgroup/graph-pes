@@ -47,7 +47,7 @@ The `graph-pes` package provides a **unified interface and framework** for defin
 
 # Related work
 
-`graph-pes` is beginning to drive projects within our research group, and we hope that it will be useful to many others. In recent work, we have described the use of `graph-pes` for fitting NequIP models to datasets created using `autoplex` [@Liu-25-08], for assessing zero-shot performance of different graph-network MLIPs [@Mahmoud-25-02], and for distilling atomistic foundation models [@Gardner-25-06].
+`graph-pes` is beginning to drive projects within our research group, and we hope that it will be useful to many others. In recent work, we have described the use of `graph-pes` for fitting NequIP models to datasets created using `autoplex` [@Liu-25-08], for assessing zero-shot performance of different graph-network MLIPs [@Mahmoud-25-11], and for distilling atomistic foundation models [@Gardner-25-06].
 
 A number of existing packages offer training and validation pipelines for particular ML-PES architectures, including `schnetpack` [@schutt2019schnetpack; @schutt2023schnetpack], `deepmd-kit` [@Wang-18-07; @Zeng-23-08], `nequip` [@Batzner-22-05], `mace-torch` [@Batatia-22-10], `torchmd-net` [@TorchMDNet], and `fairchem` [@fairchem]. 
 These frameworks focus on their associated model families and do not share a common interface for training.
@@ -70,7 +70,7 @@ Full API details are available in the project documentation.
 All MLIP models in `graph-pes` are implemented as subclasses of the `GraphPESModel` base class. 
 Implementations need only define a forward pass that returns a local energy for each atom or a total energy for the structure; 
 the framework handles the calculation of forces and stress tensors in a conservative manner via automatic differentiation. 
-We also support models that return direct force and stress tensor predictions (e.g., `TensorNet` or `orb-v3-*` with their optional direct force readout heads).
+We also support models that return direct force and stress tensor predictions (_e.g._, `TensorNet` or `orb-v3-*` with their optional direct force readout heads).
 
 Building on the `GraphPESModel` class, we provide independent re-implementations of popular MLIP architectures, including `PaiNN` [@Schutt-21-06], `EDDP` [@Pickard-22-07], `NequIP` [@Batzner-22-05], `MACE` [@Batatia-22-10], and `TensorNet` [@Simeon-23-06]. 
 We use building blocks provided by `e3nn` [@Geiger-22-07] to implement models that act on spherical tensor decompositions.
@@ -90,7 +90,7 @@ Because all models conform to the same interface, all training features can be u
 
 ## Easy access to foundation models
 
-A recent area of research is the development of "foundational" MLIPs that can describe the potential-energy surface of a wide range of systems. `graph-pes` integrates directly with the `mace-torch`, `mattersim`, and `orb-models` packages to provide access to, among others, the `MACE-MP` [@Batatia-25-11], `MatterSim` [@Yang-24-05], `orb-v2` [@Neumann-24-10], `MACE-OFF` [@Kovacs-25-01],  `Egret-v1` [@Mann-25-05], and `orb-v3` [@Rhodes-25-04] families of models. Each of these integrations generates `GraphPESModels` that are directly compatible with all relevant `graph-pes` features.
+A recent area of research is the development of "foundational" MLIPs that can describe the potential-energy surface of a wide range of systems. `graph-pes` integrates directly with the `mace-torch`, `mattersim`, and `orb-models` packages to provide access to, among others, the `MACE-MP` [@Batatia-25-11], `MatterSim` [@Yang-24-05], `orb-v2` [@Neumann-24-10], `MACE-OFF` [@Kovacs-25-05],  `Egret-v1` [@Mann-25-05], and `orb-v3` [@Rhodes-25-04] families of models. Each of these integrations generates `GraphPESModels` that are directly compatible with all relevant `graph-pes` features.
 
 # Acknowledgements
 
