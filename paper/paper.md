@@ -51,7 +51,7 @@ The `graph-pes` package provides a **unified interface and framework** for defin
 
 A number of existing packages offer training and validation pipelines for particular ML-PES architectures, including `schnetpack` [@schutt2019schnetpack; @schutt2023schnetpack], `deepmd-kit` [@Wang-18-07; @Zeng-23-08], `nequip` [@Batzner-22-05], `mace-torch` [@Batatia-22-10], `torchmd-net` [@TorchMDNet], and `fairchem` [@fairchem]. 
 These frameworks focus on their associated model families and do not share a common interface for training.
-While `MatterTune` [@Kong-25-04] offers a unified interface for foundation model fine-tuning, it does not easily support training arbitrary models from scratch. 
+While `MatterTune` [@Kong-25-08] offers a unified interface for foundation model fine-tuning, it does not easily support training arbitrary models from scratch. 
 In contrast to these, `graph-pes` is a general, model-agnostic framework, designed to enable exact side-by-side comparisons, easy implementation of arbitrary new architectures, and standardized training and evaluation workflows.
 
 # Features and implementation
@@ -86,7 +86,7 @@ As well as training from scratch, we also support the fine-tuning of existing mo
 Under the hood, `graph-pes-train` builds upon the `PyTorch Lightning` [@Lightning] training loop, allowing the user to configure a variety of common training features and callbacks.
 We also support the use of arbitrary, user-defined components, including custom loss functions, model architectures, optimisers, and datasets.
 
-Because all models conform to the same interface, all training features can be used with any model architecture. Similarly, all downstream model uses can be written in an architecture-agnostic manner, allowing for MD, relaxations, and other scripts to be written once, and then used with any MLIP architecture, _e.g._ for extended validation beyond simple error metrics [@Morrow-23-03].
+Because all models conform to the same interface, all training features can be used with any model architecture. Similarly, all downstream model uses can be written in an architecture-agnostic manner, allowing for MD, relaxations, and other scripts to be written once, and then used with any MLIP architecture, _e.g._, for extended validation beyond simple error metrics [@Morrow-23-03].
 
 ## Easy access to foundation models
 
