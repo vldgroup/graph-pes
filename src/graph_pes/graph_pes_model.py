@@ -410,7 +410,7 @@ class GraphPESModel(GraphPropertyModel):
     ):
         """
         Return a model suitable for use with the
-        `torch_sim <https://github.com/Radical-AI/torch-sim>`__ package.
+        `torch_sim <https://github.com/TorchSim/torch-sim>`__ package.
 
         Internally, we set this model to evaluation mode, and wrap it in a
         class that is suitable for use with the ``torch_sim`` package.
@@ -437,7 +437,7 @@ class GraphPESModel(GraphPropertyModel):
                 "torch_sim is not installed. Please install it using "
                 "pip install torch-sim-atomistic"
             )
-        from torch_sim.models.graphpes import GraphPESWrapper
+        from graph_pes.torch_sim import GraphPESWrapper
 
         return GraphPESWrapper(
             self.eval(),
