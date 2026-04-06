@@ -1,15 +1,12 @@
 from __future__ import annotations
 
-import traceback
-import warnings
 from pathlib import Path
 from typing import Any
 
 import torch
 
-from graph_pes import AtomicGraph, GraphPESModel
-from graph_pes.atomic_graph import PropertyKey
-from graph_pes.models import load_model
+from graph_pes.atomic_graph import AtomicGraph, PropertyKey
+from graph_pes.graph_pes_model import GraphPESModel
 
 
 try:
@@ -19,10 +16,6 @@ try:
 
 except ImportError as exc:
     _torch_sim_import_error = exc
-    warnings.warn(
-        f"torch-sim import failed: {traceback.format_exc()}",
-        stacklevel=2,
-    )
 
     class GraphPESWrapper(torch.nn.Module):
         """Placeholder raised when torch-sim is unavailable."""
@@ -44,7 +37,7 @@ else:
     def _state_to_atomic_graph(state: SimState, cutoff: torch.Tensor) -> AtomicGraph:
         # graph-pes models internally trim the neighbor list to the model cutoff.
         # Bump it slightly here to avoid exact-cutoff inclusion edge cases.
-        nl, _system_mapping, shifts = torchsim_nl(
+        neighbour_list, _system_mapping, neighbour_cell_offsets = torchsim_nl(
             state.positions,
             state.row_vector_cell,
             state.pbc,
@@ -54,15 +47,17 @@ else:
         n_atoms_per_system = torch.bincount(state.system_idx)
         ptr = torch.zeros(state.n_systems + 1, dtype=torch.long, device=state.device)
         ptr[1:] = n_atoms_per_system.cumsum(dim=0)
-        n_sys = state.n_systems
-        total_charge = torch.zeros(n_sys, device=state.device)
-        total_spin = torch.zeros(n_sys, device=state.device)
+        n_systems = state.n_systems
+        # TorchSim does not track per-system charge or spin, but AtomicGraph
+        # reserves these slots for downstream interfaces that may expect them.
+        total_charge = torch.zeros(n_systems, device=state.device)
+        total_spin = torch.zeros(n_systems, device=state.device)
         return AtomicGraph(
             Z=state.atomic_numbers.long(),
             R=state.positions,
             cell=state.row_vector_cell,
-            neighbour_list=nl.long(),
-            neighbour_cell_offsets=shifts,
+            neighbour_list=neighbour_list.long(),
+            neighbour_cell_offsets=neighbour_cell_offsets,
             properties={},
             cutoff=cutoff.item(),
             other={
@@ -91,7 +86,12 @@ else:
             )
             self._dtype = dtype
 
-            _model = model if isinstance(model, GraphPESModel) else load_model(model)
+            if isinstance(model, GraphPESModel):
+                _model = model
+            else:
+                from graph_pes.models import load_model
+
+                _model = load_model(model)
             self._gp_model = _model.to(device=self.device, dtype=self.dtype)
 
             self._compute_forces = compute_forces

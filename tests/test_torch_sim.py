@@ -2,6 +2,7 @@ import pytest
 import torch
 from ase.build import molecule
 
+from graph_pes.atomic_graph import AtomicGraph
 from graph_pes.models import SchNet
 
 
@@ -17,6 +18,7 @@ def test_torch_sim_model_matches_direct_wrapper():
     atoms.center(vacuum=10.0)
 
     model = SchNet(cutoff=5.5)
+    graph = AtomicGraph.from_ase(atoms, cutoff=5.5)
     direct_wrapper = GraphPESWrapper(
         model,
         device=DEVICE,
@@ -37,3 +39,12 @@ def test_torch_sim_model_matches_direct_wrapper():
     assert direct_output.keys() == method_output.keys()
     for key in direct_output:
         torch.testing.assert_close(direct_output[key], method_output[key])
+
+    torch.testing.assert_close(
+        method_output["energy"].cpu(),
+        model.predict_energy(graph).reshape(1).cpu(),
+    )
+    torch.testing.assert_close(
+        method_output["forces"].cpu(),
+        model.predict_forces(graph).cpu(),
+    )
