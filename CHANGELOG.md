@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-05-07
+Fix Ruff formatting issues in graph_pes/torch_sim.py
+
 ## [0.2.5] - 2025-12-02
 
 Added atomic tensor models for NequIP and MACE
