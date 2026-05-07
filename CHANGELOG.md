@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Moved the TorchSim wrapper implementation to `graph_pes.interfaces._torch_sim` and renamed the primary wrapper class to `TorchSimWrapper`.
+
 ## [1.0.0] - 2026-05-07
 Fix Ruff formatting issues in graph_pes/torch_sim.py
 

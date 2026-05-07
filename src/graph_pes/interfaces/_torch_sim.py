@@ -16,7 +16,7 @@ try:
 except ImportError as exc:
     _torch_sim_import_error = exc
 
-    class GraphPESWrapper(torch.nn.Module):
+    class TorchSimWrapper(torch.nn.Module):
         """Placeholder raised when torch-sim is unavailable."""
 
         def __init__(
@@ -34,8 +34,8 @@ except ImportError as exc:
 else:
 
     def _state_to_atomic_graph(
-            state: SimState, 
-            cutoff: torch.Tensor) -> AtomicGraph:
+        state: SimState, cutoff: torch.Tensor
+    ) -> AtomicGraph:
         # graph-pes models internally trim the neighbor list to the model cutoff
         # Bump it slightly here to avoid exact-cutoff inclusion edge cases.
         neighbour_list, _system_mapping, neighbour_cell_offsets = torchsim_nl(
@@ -46,9 +46,9 @@ else:
             state.system_idx,
         )
         n_atoms_per_system = torch.bincount(state.system_idx)
-        ptr = torch.zeros(state.n_systems + 1, 
-                          dtype=torch.long, 
-                          device=state.device)
+        ptr = torch.zeros(
+            state.n_systems + 1, dtype=torch.long, device=state.device
+        )
         ptr[1:] = n_atoms_per_system.cumsum(dim=0)
         n_systems = state.n_systems
         # TorchSim does not track per-system charge or spin, but AtomicGraph
@@ -71,7 +71,7 @@ else:
             ptr=ptr,
         )
 
-    class GraphPESWrapper(ModelInterface):
+    class TorchSimWrapper(ModelInterface):
         """Wrap a GraphPES model for use with torch-sim."""
 
         def __init__(
@@ -122,4 +122,6 @@ else:
             return {k: v.detach() for k, v in preds.items()}
 
 
-__all__ = ["GraphPESWrapper"]
+GraphPESWrapper = TorchSimWrapper
+
+__all__ = ["TorchSimWrapper", "GraphPESWrapper"]
