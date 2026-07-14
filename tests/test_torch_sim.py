@@ -5,9 +5,8 @@ from ase.build import molecule
 from graph_pes.atomic_graph import AtomicGraph
 from graph_pes.models import SchNet
 
-
 torch_sim = pytest.importorskip("torch_sim")
-from graph_pes.torch_sim import GraphPESWrapper
+from graph_pes.interfaces._torch_sim import GraphPESWrapper, TorchSimWrapper
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 DTYPE = torch.float32
@@ -19,7 +18,7 @@ def test_torch_sim_model_matches_direct_wrapper():
 
     model = SchNet(cutoff=5.5)
     graph = AtomicGraph.from_ase(atoms, cutoff=5.5)
-    direct_wrapper = GraphPESWrapper(
+    direct_wrapper = TorchSimWrapper(
         model,
         device=DEVICE,
         dtype=DTYPE,
@@ -35,7 +34,8 @@ def test_torch_sim_model_matches_direct_wrapper():
     direct_output = direct_wrapper(state)
     method_output = method_wrapper(state)
 
-    assert isinstance(method_wrapper, GraphPESWrapper)
+    assert GraphPESWrapper is TorchSimWrapper
+    assert isinstance(method_wrapper, TorchSimWrapper)
     assert direct_output.keys() == method_output.keys()
     for key in direct_output:
         torch.testing.assert_close(direct_output[key], method_output[key])
