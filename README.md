@@ -44,6 +44,13 @@ graph-pes-train config.yaml
 Alternatively, for a 0-install quickstart experience, please see [this Google Colab](https://colab.research.google.com/github/vldgroup/graph-pes/blob/main/docs/source/quickstart/quickstart.ipynb), which you can also find in our [documentation](https://vldgroup.github.io/graph-pes/quickstart/quickstart.html).
 
 
+## Getting help
+
+For usage questions, help with configuration, or troubleshooting, please [open a GitHub issue](https://github.com/vldgroup/graph-pes/issues/new). Questions are welcome; you do not need to have found a bug.
+
+Please include what you are trying to do, your `graph-pes` and Python versions, your operating system, and a minimal example or configuration where possible. If something fails, include the command and full error message.
+
+
 ## Contributing
 
 Contributions are welcome! If you find any issues or have suggestions for new features, please open an issue or submit a pull request on the [GitHub repository](https://github.com/vldgroup/graph-pes). 
