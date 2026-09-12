@@ -65,7 +65,7 @@ def test_raw_model_agreement(structure: ase.Atoms):
     data = c.convert(structure)
     dl = DataLoader_pyg([data], batch_size=1)
     batch = next(iter(dl))
-    batch_dict = batch_to_dict(batch)
+    batch_dict = batch_to_dict(batch, device="cpu")
     them = MATTERSIM_MODEL(batch_dict)
 
     assert us.item() == pytest.approx(them.item(), abs=1e-5)
@@ -109,13 +109,13 @@ def test_batch_agreement():
     dl = DataLoader_pyg([data, data], batch_size=2)
     batch = next(iter(dl))
     assert batch.num_graphs == 2
-    batch_dict = batch_to_dict(batch)
+    batch_dict = batch_to_dict(batch, device="cpu")
     them = MATTERSIM_MODEL(batch_dict)
     assert them.shape == (2,)
     torch.testing.assert_close(us, them)
 
     # test forces
-    pot = Potential(MATTERSIM_MODEL)
+    pot = Potential(MATTERSIM_MODEL, device="cpu")
     their_forces = pot(batch_dict)["forces"]
     assert their_forces.shape == (4, 3)
 
@@ -136,7 +136,7 @@ def test_implementation():
     data = c.convert(DIAMOND)
     dl = DataLoader_pyg([data], batch_size=1)
     batch = next(iter(dl))
-    batch_dict = batch_to_dict(batch)
+    batch_dict = batch_to_dict(batch, device="cpu")
 
     graph = AtomicGraph.from_ase(DIAMOND)
     graph = graph._replace(
