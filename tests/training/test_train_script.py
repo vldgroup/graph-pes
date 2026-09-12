@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+import torch
 import yaml
 
 from graph_pes.config.training import SWAConfig, TrainingConfig
+from graph_pes.models import load_model
 from graph_pes.scripts.train import train_from_config
 from graph_pes.scripts.utils import extract_config_dict_from_command_line
 from graph_pes.training.callbacks import WandbLogger
@@ -40,6 +44,83 @@ def test_train_script(tmp_path: Path):
     assert root.exists()
     sub_dir = next(root.iterdir())
     assert (sub_dir / "model.pt").exists()
+
+
+def test_training_reproducibility(tmp_path: Path):
+    states = []
+    metrics = []
+    for run_id, seed in [("default", None), ("same", 42), ("different", 43)]:
+        config = _get_quick_train_config(tmp_path)
+        config["model"] = {
+            "+SchNet": {"cutoff": 3.0, "channels": 8, "layers": 1}
+        }
+        config["general"]["run_id"] = run_id
+        config["general"].pop("seed")
+        if seed is not None:
+            config["SEED"] = seed
+            config["general"]["seed"] = "=/SEED"
+        config["fitting"]["trainer_kwargs"]["max_epochs"] = 2
+        config["fitting"]["trainer_kwargs"]["deterministic"] = True
+        config_path = tmp_path / f"{run_id}.yaml"
+        config_path.write_text(yaml.safe_dump(config))
+        result = subprocess.run(
+            [sys.executable, "-m", "graph_pes.scripts.train", str(config_path)],
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+        model = load_model(tmp_path / run_id / "model.pt")
+        states.append(
+            {
+                k: v
+                for k, v in model.state_dict().items()
+                if isinstance(v, torch.Tensor)
+            }
+        )
+        summary = yaml.safe_load(
+            (tmp_path / run_id / "summary.yaml").read_text()
+        )
+        metrics.append(
+            {k: v for k, v in summary.items() if k.startswith("test/")}
+        )
+
+    assert states[0].keys() == states[1].keys()
+    for key in states[0]:
+        torch.testing.assert_close(
+            states[0][key], states[1][key], rtol=0, atol=0
+        )
+    assert metrics[0]
+    assert metrics[0] == metrics[1]
+    assert any(
+        not torch.equal(states[0][key], states[2][key]) for key in states[0]
+    )
+    assert metrics[0] != metrics[2]
+
+
+@pytest.mark.parametrize("dtype", ["float32", "float64"])
+def test_dtype_before_model_initialization(tmp_path: Path, monkeypatch, dtype):
+    class InitializationComplete(Exception):
+        pass
+
+    def check_constructor(**kwargs):
+        assert torch.get_default_dtype() == getattr(torch, dtype)
+        raise InitializationComplete
+
+    monkeypatch.setattr("graph_pes.models.SchNet", check_constructor)
+    config = _get_quick_train_config(tmp_path)
+    config["model"] = {"+SchNet": {}}
+    config["DTYPE"] = dtype
+    config["general"]["torch"]["dtype"] = "=/DTYPE"
+    previous_dtype = torch.get_default_dtype()
+    try:
+        torch.set_default_dtype(
+            torch.float64 if dtype == "float32" else torch.float32
+        )
+        with pytest.raises(InitializationComplete):
+            train_from_config(config)
+    finally:
+        torch.set_default_dtype(previous_dtype)
 
 
 def test_run_id(tmp_path: Path):

@@ -41,13 +41,18 @@ class HasDefaults(Protocol):
 HD = TypeVar("HD", bound=HasDefaults)
 
 
+def resolve_config_dict(config_dict: dict, config_class: type[HD]) -> dict:
+    """Apply defaults and resolve references without constructing objects."""
+    config_dict = nested_merge(config_class.defaults(), config_dict)
+    return data2objects.fill_referenced_parts(config_dict)  # type: ignore
+
+
 def instantiate_config_from_dict(
     config_dict: dict, config_class: type[HD]
 ) -> tuple[dict, HD]:
     """Instantiate a config object from a dictionary."""
 
-    config_dict = nested_merge(config_class.defaults(), config_dict)
-    final_dict: dict = data2objects.fill_referenced_parts(config_dict)  # type: ignore
+    final_dict = resolve_config_dict(config_dict, config_class)
 
     import graph_pes
     import graph_pes.data

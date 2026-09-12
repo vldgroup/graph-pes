@@ -504,6 +504,10 @@ Set the global random seed for reproducibility by setting this to an integer val
     general:
         seed: 42
 
+A fixed seed alone may not ensure exact reproducibility when training on GPUs;
+set ``fitting/trainer_kwargs/deterministic=true`` for deterministic operations
+at the cost of reduced performance.
+
 
 Output location
 +++++++++++++++

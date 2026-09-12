@@ -6,6 +6,7 @@ import tempfile
 from datetime import datetime
 from pathlib import Path
 
+import dacite
 import pytorch_lightning as pl
 import torch
 import yaml
@@ -21,8 +22,9 @@ from graph_pes.config.shared import (
     instantiate_config_from_dict,
     parse_loss,
     parse_model,
+    resolve_config_dict,
 )
-from graph_pes.config.training import TrainingConfig
+from graph_pes.config.training import GeneralConfig, TrainingConfig
 from graph_pes.scripts.utils import (
     configure_general_options,
     extract_config_dict_from_command_line,
@@ -82,13 +84,18 @@ def train_from_config(config_data: dict):
     logger.info(f"Started `graph-pes-train` at {now_ms}")
 
     logger.debug("Parsing config...")
+    config_data = resolve_config_dict(config_data, TrainingConfig)
+    general = dacite.from_dict(
+        data_class=GeneralConfig,
+        data=config_data["general"],
+        config=dacite.Config(strict=True),
+    )
+    # Constructors can sample random numbers and depend on the default dtype.
+    configure_general_options(general.torch, general.seed)
     config_data, config = instantiate_config_from_dict(
         config_data, TrainingConfig
     )
     logger.info("Successfully parsed config.")
-
-    # general options
-    configure_general_options(config.general.torch, config.general.seed)
 
     # generate / look up the output directory for this training run
     # and handle the case where there is an ID collision by incrementing
