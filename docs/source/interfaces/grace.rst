@@ -17,16 +17,20 @@ them like any other :class:`~graph_pes.GraphPESModel`, either via the Python API
 .. code-block:: yaml
 
    model:
-      offset: +LearnableOffset()
-      many-body:
-         +grace_fm:
-            model: GRACE-2L-SMAX-OMAT-medium
+      +grace_fm:
+         model: GRACE-2L-SMAX-OMAT-medium
 
    fitting:
+      # add per-element offsets fitted to the difference between
+      # your reference energies and the foundation model's predictions
       auto_fit_reference_energies: true
       optimizer:
          name: AdamW
          lr: 0.0001
+
+The foundation models already predict absolute DFT energies, so don't add a
+separate :class:`~graph_pes.models.LearnableOffset` component: its pre-fit
+assumes the rest of the model predicts zero energy.
 
 No TensorFlow or ``tensorpotential`` installation is needed: the model's
 ``kokkos.npz`` export (about 240 MB) is downloaded from
