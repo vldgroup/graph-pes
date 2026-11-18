@@ -18,6 +18,7 @@ from graph_pes.graph_pes_model import GraphPESModel, GraphPropertyModel
 from graph_pes.utils.logger import logger
 
 from .addition import AdditionModel, TensorAdditionModel
+from .e3nn.grace import GRACE
 from .e3nn.mace import MACE, TensorMACE, ZEmbeddingMACE, ZEmbeddingTensorMACE
 from .e3nn.nequip import (
     NequIP,
@@ -56,6 +57,7 @@ __all__ = [
     "LearnableOffset",
     "FixedTensorOffset",
     "LearnableTensorOffset",
+    "GRACE",
     "LennardJones",
     "LennardJonesMixture",
     "MACE",

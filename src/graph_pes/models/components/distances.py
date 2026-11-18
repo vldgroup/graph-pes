@@ -364,6 +364,63 @@ class ExponentialRBF(DistanceExpansion):
         return torch.exp(-self.beta * offsets**2)
 
 
+class Chebyshev(DistanceExpansion):
+    r"""
+    A Chebyshev polynomial expansion, as used in the `GRACE
+    <https://doi.org/10.1103/PhysRevX.14.021036>`_ family of models:
+
+    .. math::
+        \phi_{n}(r) = T_n\left(\frac{2r}{r_\text{cut}} - 1\right)
+        \quad n \in [1, n_\text{features}]
+
+    where :math:`T_n` is the :math:`n`'th Chebyshev polynomial of the first
+    kind. Note that the constant :math:`T_0` term is not included. Combine
+    with an :class:`Envelope` to obtain functions that smoothly go to zero
+    at the cutoff.
+
+    .. code::
+
+        import torch
+        from graph_pes.models.components.distances import Chebyshev
+        import matplotlib.pyplot as plt
+
+        cutoff = 5.0
+        cheb = Chebyshev(n_features=4, cutoff=cutoff)
+        r = torch.linspace(0, cutoff, 101)  # (101,)
+        with torch.no_grad():
+            embedding = cheb(r)  # (101, 4)
+
+        plt.plot(r / cutoff, embedding)
+        plt.xlabel(r"$r / r_c$")
+
+    Parameters
+    ----------
+    n_features
+        The number of features to expand into.
+    cutoff
+        The cutoff radius.
+    trainable
+        Unused: this expansion has no learnable parameters. Present for
+        compatibility with the :class:`DistanceExpansion` interface.
+    """
+
+    def __init__(self, n_features: int, cutoff: float, trainable: bool = True):
+        super().__init__(n_features, cutoff, trainable)
+
+    def expand(self, r: torch.Tensor) -> torch.Tensor:
+        x = 2 * r / self.cutoff - 1  # (..., 1)
+        # three-term recurrence: T_{n+1} = 2x T_n - T_{n-1}
+        t_prev = torch.ones_like(x)
+        t_curr = x
+        terms = [t_curr]
+        for _ in range(self.n_features - 1):
+            t_next = 2 * x * t_curr - t_prev
+            terms.append(t_next)
+            t_prev = t_curr
+            t_curr = t_next
+        return torch.cat(terms, dim=-1)
+
+
 class Envelope(torch.nn.Module):
     """
     Any envelope function, :math:`E(r)`, for smoothing potentials
