@@ -33,6 +33,7 @@
     :hidden:
 
     interfaces/mace
+    interfaces/grace
     interfaces/mattersim
     interfaces/orb
     
@@ -83,7 +84,7 @@ You can take **any** model that inherits from this class and:
 We provide many :class:`~graph_pes.GraphPESModel`\ s, including:
 
 * re-implementations of popular architectures, including :class:`~graph_pes.models.NequIP`, :class:`~graph_pes.models.PaiNN`, :class:`~graph_pes.models.MACE` and :class:`~graph_pes.models.TensorNet`
-* wrappers for other popular ML-PES frameworks, including :doc:`mace-torch <interfaces/mace>`, :doc:`mattersim <interfaces/mattersim>`, and :doc:`orb-models <interfaces/orb>`, that convert their models into ``graph-pes`` compatible :class:`~graph_pes.GraphPESModel` instances
+* wrappers for other popular ML-PES frameworks, including :doc:`mace-torch <interfaces/mace>`, :doc:`GRACE <interfaces/grace>`, :doc:`mattersim <interfaces/mattersim>`, and :doc:`orb-models <interfaces/orb>`, that convert their models into ``graph-pes`` compatible :class:`~graph_pes.GraphPESModel` instances
 
 Use ``graph-pes`` to train models from scratch, experiment with new architectures, write architecture-agnostic validation pipelines, and try out different foundation models with minimal code changes.
 

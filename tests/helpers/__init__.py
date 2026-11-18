@@ -19,6 +19,7 @@ from graph_pes.graph_pes_model import GraphPESModel
 from graph_pes.models import (
     ALL_PES_MODELS,
     EDDP,
+    GRACE,
     MACE,
     AdditionModel,
     FixedOffset,
@@ -79,6 +80,18 @@ def all_model_factories(
             "channels": 8,
         },
         EDDP: {"elements": expected_elements},
+        GRACE: {
+            "elements": expected_elements,
+            "layers": 2,
+            "lmax": 2,
+            "n_rad_max": 4,
+            "max_order": 3,
+            "n_mlp_dens": 4,
+            "embedding_size": 4,
+            "indicator_channels": 4,
+            "radial_hidden_layers": [8],
+            "readout_width": 8,
+        },
     }
 
     def _model_factory(
