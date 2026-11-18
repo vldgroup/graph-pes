@@ -12,6 +12,7 @@ Many Body Models
     painn
     nequip
     mace
+    grace
     tensornet
     orb
     tensornequip

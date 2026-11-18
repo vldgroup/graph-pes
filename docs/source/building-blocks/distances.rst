@@ -15,6 +15,8 @@ base class, together with implementations of a few common expansions:
     :show-inheritance:
 .. autoclass:: graph_pes.models.components.distances.ExponentialRBF
     :show-inheritance:
+.. autoclass:: graph_pes.models.components.distances.Chebyshev
+    :show-inheritance:
 
 
 Implementing a new Expansion
